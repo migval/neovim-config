@@ -1,6 +1,21 @@
-snippet function
-abbr    func
-options word
-  function ${1:#:function_name}(${2:#:argument}) {
-    ${0:TARGET}
+snippet Dispatch Event
+abbr    dispatch
+  this.dispatchEvent(new CustomEvent('${1:'custom-event-name'}', {
+    detail: ${2},
+    bubbles: ${3:true},
+    composed: ${4:true}
+  }));${0}
+
+snippet CellsAddComponent
+  {
+		zone: "${1:app__main}",
+		tag: "${2:component-name}",
+		properties: {
+			cellsConnections: {
+				in: {
+				},
+				out: {
+				}
+			}
+		}
   }

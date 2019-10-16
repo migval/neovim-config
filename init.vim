@@ -1,6 +1,7 @@
 call plug#begin('~/.local/share/nvim/plugged')
 
-Plug 'joshdick/onedark.vim'
+"Plug 'joshdick/onedark.vim'
+Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdtree'
 
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -10,27 +11,51 @@ Plug 'carlitux/deoplete-ternjs'
 Plug 'jiangmiao/auto-pairs'
 Plug 'mattn/emmet-vim'
 Plug 'othree/html5.vim', { 'for': 'html' }
+Plug 'easymotion/vim-easymotion'
 
 Plug 'pangloss/vim-javascript'
 Plug 'w0rp/ale'
+Plug 'gabesoft/vim-ags'
+Plug 'ctrlpvim/ctrlp.vim'
 
 Plug 'Shougo/neosnippet.vim'
 
 call plug#end()
 
+let g:python2_host_prog = '/usr/local/bin/python'
+let g:python3_host_prog = '/usr/local/bin/python3'
+
+"Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
+"If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
+"(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
+if (empty($TMUX))
+  if (has("nvim"))
+    "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  " For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+  " Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+  if (has("termguicolors"))
+    set termguicolors
+  endif
+endif
+
+syntax on
+colorscheme gruvbox
+
 
 set number
-syntax enable
-
-let g:javascript_plugin_flow = 1
-
-set termguicolors  
-colorscheme onedark  
 
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
 set expandtab
+
+set foldmethod=syntax   
+set foldcolumn=1
+let javascript_fold=1
+set foldlevelstart=99
 
 set scroll=10
 
@@ -53,23 +78,40 @@ nmap <leader>rc :tabnew <cr> e ~/.config/nvim/init.vim <cr>
 nmap <leader>sp :tabnew <cr> e ~/.config/nvim/snippets <cr>
 
 "Move between tabs
-nmap <S-H> :tabp <cr>
-nmap <S-L> :tabn <cr>
-nmap <M-T> :tabnew <cr>
+nmap <C-H> :tabp <cr>
+nmap <C-L> :tabn <cr>
+nmap <C-T> :tabnew <cr>
 
 "Move between splits
-nnoremap J <C-W><C-H>
-nnoremap K <C-W><C-L>
+nno <C-J> <C-W><C-H>
+nno <C-K> <C-W><C-L>
+nno <C-M> <C-W><C-J>
+nno <C-I> <C-W><C-K>
 
 "Scroll
-nmap <M-j> <C-D>
-nmap <M-k> <C-U>
+nmap <S-J> <C-D>
+nmap <S-K> <C-U>
+
+nno <leader>f viwy/<C-r>"<cr>
+vn <leader>f y/<C-r>"<cr>
+
+"Search word in cursor global
+nno <leader>fg :Ags<cr>
+
+"Search text selected in visual mode global
+vn <leader>fg y:Ags "<C-r>""<cr>
+
+"Search files in sym links
+let g:ctrlp_follow_symlinks = 1 
 
 " -----------------------------------------------------------------
 " ------------------------- NERDTREE ------------------------------
 " -----------------------------------------------------------------
 "
+
+let g:NERDTreeWinSize=50
 nmap <leader>e :NERDTreeToggle <cr>
+nmap <leader>r :NERDTreeFind<cr>
 
 
 " -----------------------------------------------------------------
@@ -108,21 +150,24 @@ let g:neosnippet#snippets_directory='~/.config/nvim/snippets'
 let g:neosnippet#disable_runtime_snippets={ '_': 1 }
 
 
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
+imap <C-k>  <Plug>(neosnippet_expand_or_jump)
+smap <C-k>  <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>  <Plug>(neosnippet_expand_target)
 
 
 " -----------------------------------------------------------------
 " ------------------------- ALE LINTER ----------------------------
 " -----------------------------------------------------------------
 
+let g:ale_fixers = {
+\   'javascript': ['eslint'],
+\}
+
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_text_changed = 1 
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-
 
 let g:user_emmet_leader_key=','
 
